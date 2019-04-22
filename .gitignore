@@ -120,3 +120,6 @@ source/stash/Logs
 #runtime folder
 runtime_env/
 source/.vs/
+
+#libs
+lib/bass_dts*
