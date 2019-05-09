@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bass_dts", "bass_dts\bass_dts.vcxproj", "{72A27AD0-B3E1-4FD5-856D-4744B09B66D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagedBass.Dts", "ManagedBass.Dts\ManagedBass.Dts.csproj", "{02598E79-932A-4412-BF38-81D453D0BE98}"
+	ProjectSection(ProjectDependencies) = postProject
+		{72A27AD0-B3E1-4FD5-856D-4744B09B66D8} = {72A27AD0-B3E1-4FD5-856D-4744B09B66D8}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagedBass.Dts.Test", "ManagedBass.Dts.Test\ManagedBass.Dts.Test.csproj", "{801F4E57-CA92-4F55-B6B3-B53F6CD370E8}"
 EndProject

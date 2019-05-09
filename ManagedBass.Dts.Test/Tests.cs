@@ -6,10 +6,12 @@ using System.Threading;
 
 namespace ManagedBass.Dts.Test
 {
-    [TestFixture(BassFlags.Default, @"..\Media\01 In Chains.dts")]
-    [TestFixture(BassFlags.Default | BassFlags.Float, @"..\Media\01 In Chains.dts")]
-    [TestFixture(BassFlags.Default, @"..\Media\01 World In My Eyes.dts")]
-    [TestFixture(BassFlags.Default | BassFlags.Float, @"..\Media\01 World In My Eyes.dts")]
+    [TestFixture(BassFlags.Default, @"..\..\Media\01 In Chains.dts")]
+    [TestFixture(BassFlags.Default, @"..\..\Media\01 All Night Long.dts")]
+    [TestFixture(BassFlags.Default, @"..\..\Media\01 World In My Eyes.dts")]
+    [TestFixture(BassFlags.Default | BassFlags.Float, @"..\..\Media\01 In Chains.dts")]
+    [TestFixture(BassFlags.Default | BassFlags.Float, @"..\..\Media\01 All Night Long.dts")]
+    [TestFixture(BassFlags.Default | BassFlags.Float, @"..\..\Media\01 World In My Eyes.dts")]
     public class Tests
     {
         private static readonly string CurrentDirectory = Path.GetDirectoryName(typeof(Tests).Assembly.Location);
@@ -130,6 +132,45 @@ namespace ManagedBass.Dts.Test
             var channelPositionSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelPosition);
 
             Assert.IsTrue(channelPositionSeconds >= channelLengthSeconds - 10);
+
+            if (!Bass.StreamFree(sourceChannel))
+            {
+                Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+            }
+
+            if (!Bass.Free())
+            {
+                Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+            }
+        }
+
+        /// <summary>
+        /// Check length.
+        /// </summary>
+        [Test]
+        public void Test003()
+        {
+            if (!Bass.Init(Bass.DefaultDevice))
+            {
+                Assert.Fail(string.Format("Failed to initialize BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+            }
+
+            //Plugin is not yet working.
+            //if (Bass.PluginLoad(Path.Combine(CurrentDirectory, "bass_dts.dll")) == 0)
+            //{
+            //    Assert.Fail("Failed to load DTS.");
+            //}
+
+            var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
+            if (sourceChannel == 0)
+            {
+                Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+            }
+
+            var channelLength = Bass.ChannelGetLength(sourceChannel);
+            var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
+            
+
 
             if (!Bass.StreamFree(sourceChannel))
             {

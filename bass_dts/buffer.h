@@ -1,3 +1,3 @@
 #include <windows.h>
 
-void* offset_buffer(void* buffer, DWORD position);
+void* offset_buffer(const void* const buffer, const DWORD position);

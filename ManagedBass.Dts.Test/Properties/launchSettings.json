@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ManagedBass.Dts.Test": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    },
+  }
+}

@@ -1,7 +1,3 @@
-#ifdef _DEBUG
-#include <stdio.h>
-#endif
-
 #include "bass_dts.h"
 #include "dts_file.h"
 #include "dts_stream.h"
@@ -12,6 +8,7 @@
 
 extern const ADDON_FUNCTIONS addon_functions;
 
+//We just privode the minimum functions, the NULL slots are optional.
 const ADDON_FUNCTIONS addon_functions = {
 	0,
 	&BASS_DTS_Free,
@@ -76,10 +73,9 @@ HSTREAM BASSDTSDEF(BASS_DTS_StreamCreate)(BASSFILE file, DWORD flags) {
 	if (!(dts_stream->write_sample = pcm_write_sample(dts_stream->input_format, dts_stream->output_format))) {
 		//Sample conversion is not implemented :c
 		dts_stream_free(dts_stream);
+		errorn(BASS_ERROR_NOTAVAIL);
 		return 0;
 	}
-
-	dts_stream->bass_flags = flags;
 
 	handle = bassfunc->CreateStream(
 		dts_stream->sample_rate,
@@ -114,6 +110,8 @@ HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateFile)(BOOL mem, const void* file, QWORD 
 }
 
 HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateURL)(const char *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user) {
+	//Sorry we only support file backed streams.
+	errorn(BASS_ERROR_NOTAVAIL);
 	return 0;
 }
 
@@ -122,8 +120,10 @@ DWORD BASSDTSDEF(BASS_DTS_StreamProc)(HSTREAM handle, void* buffer, DWORD length
 	DWORD position = 0;
 	DWORD remaining = length;
 	while (remaining > 0) {
+		//Make sure samples are available.
 		if (!dts_stream->samples || !dts_stream->sample_count) {
 			if (!dts_stream_update(dts_stream)) {
+				//Reached the end of the file (or some catastrophic failure to synchronize).
 				return BASS_STREAMPROC_END;
 			}
 		}
@@ -131,21 +131,26 @@ DWORD BASSDTSDEF(BASS_DTS_StreamProc)(HSTREAM handle, void* buffer, DWORD length
 			break;
 		}
 	}
+	//If remaining > 0 it's a buffer underrun, ASIO won't be happy. 
+	//Nothing we can do.
 	return length - remaining;
 }
 
 BOOL BASSDTSDEF(BASS_DTS_StreamWrite)(HSTREAM handle, void* buffer, DWORD* position, DWORD* remaining, void *user) {
 	DTS_STREAM* dts_stream = user;
+	//length = the amount of data from the current decodeded samples available.
 	DWORD length =
 		(dts_stream->sample_count - dts_stream->sample_position) *
 		dts_stream->output_format.bytes_per_sample *
 		dts_stream->channel_count;
 
+	//we usually have more data than can be written.
 	if (length > *remaining) {
 		length = *remaining;
 	}
 
 	if (!(length = dts_stream_read(dts_stream, offset_buffer(buffer, *position), length))) {
+		//Failed to read *any* data. Probably something wrong.
 		return FALSE;
 	}
 
@@ -158,11 +163,12 @@ QWORD BASSDTSDEF(BASS_DTS_GetLength)(void *inst, DWORD mode) {
 	DTS_STREAM* dts_stream = inst;
 	QWORD position;
 	if (mode == BASS_POS_BYTE) {
+		//This is *almost* correct. The frame_count is not quite right which throws this off.
 		position =
 			dts_stream->dts_file->info.frame_count *
 			dts_stream->input_format.samples_per_frame *
-			dts_stream->channel_count *
-			dts_stream->output_format.bytes_per_sample;
+			dts_stream->output_format.bytes_per_sample *
+			dts_stream->channel_count;
 		return position;
 	}
 	else {
@@ -181,6 +187,7 @@ void BASSDTSDEF(BASS_DTS_GetInfo)(void *inst, BASS_CHANNELINFO* info) {
 
 BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void *inst, QWORD position, DWORD mode) {
 	if (mode == BASS_POS_BYTE) {
+		//Because we're always file backed the position should always be valid.
 		return TRUE;
 	}
 	else {
@@ -192,12 +199,15 @@ BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void *inst, QWORD position, DWORD mode)
 QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void *inst, QWORD position, DWORD mode) {
 	DTS_STREAM* dts_stream = inst;
 	if (mode == BASS_POS_BYTE) {
+		//Not sure why we divide by the number of channels but nothing else.
 		QWORD offset = position / dts_stream->channel_count;
-		if (dts_stream->bass_flags & BASS_SAMPLE_FLOAT) {
-			//TODO: I don't know why this works.
+		//I have no fucking clue why BASS sometimes sends a position that is twice the size it should be.
+		//No fucking clue.
+		if (offset > dts_stream->dts_file->info.length) {
 			offset /= 2;
 		}
 		if (dts_file_seek(dts_stream->dts_file, offset, DTS_FILE_SEEK_POSITION)) {
+			//If the seek succeeded then throw away any already decoded samples.
 			if (dts_stream_reset(dts_stream)) {
 				return position;
 			}

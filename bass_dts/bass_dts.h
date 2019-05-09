@@ -24,6 +24,7 @@ typedef struct {
 	QWORD length;
 	QWORD start;
 	QWORD end;
+	BOOL has_extensions;
 } DTS_INFO;
 
 typedef struct {
@@ -39,7 +40,7 @@ typedef struct {
 	double max_value;
 } AUDIO_FORMAT;
 
-typedef void(*PCM_WRITE_SAMPLE)(void* buffer, int position, int sample);
+typedef void(*PCM_WRITE_SAMPLE)(void* const buffer, const int position, const int sample);
 
 typedef struct {
 	int channel_count;
@@ -52,7 +53,6 @@ typedef struct {
 	PCM_WRITE_SAMPLE write_sample;
 	AUDIO_FORMAT input_format;
 	AUDIO_FORMAT output_format;
-	DWORD bass_flags;
 } DTS_STREAM;
 
 __declspec(dllexport)
