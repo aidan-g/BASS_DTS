@@ -55,40 +55,28 @@ typedef struct {
 	AUDIO_FORMAT output_format;
 } DTS_STREAM;
 
-__declspec(dllexport)
 BOOL BASSDTSDEF(DllMain)(HANDLE dll, DWORD reason, LPVOID reserved);
 
-__declspec(dllexport)
-const void* BASSDTSDEF(BASSplugin)(DWORD face);
+VOID* BASSDTSDEF(BASSplugin)(DWORD face);
 
-__declspec(dllexport)
 HSTREAM BASSDTSDEF(BASS_DTS_StreamCreate)(BASSFILE file, DWORD flags);
 
-__declspec(dllexport)
-HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateFile)(BOOL mem, const void *file, QWORD offset, QWORD length, DWORD flags);
+HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateFile)(BOOL mem, const void* file, QWORD offset, QWORD length, DWORD flags);
 
-__declspec(dllexport)
-HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateURL)(const char *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user);
+HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateURL)(const char* url, DWORD offset, DWORD flags, DOWNLOADPROC* proc, void* user);
 
-__declspec(dllexport)
-DWORD BASSDTSDEF(BASS_DTS_StreamProc)(HSTREAM handle, void *buffer, DWORD length, void *user);
+DWORD BASSDTSDEF(BASS_DTS_StreamProc)(HSTREAM handle, void* buffer, DWORD length, void* user);
 
-__declspec(dllexport)
-BOOL BASSDTSDEF(BASS_DTS_StreamWrite)(HSTREAM handle, void* buffer, DWORD* position, DWORD* remaining, void *user);
+BOOL BASSDTSDEF(BASS_DTS_StreamWrite)(HSTREAM handle, void* buffer, DWORD* position, DWORD* remaining, void* user);
 
-__declspec(dllexport)
-QWORD BASSDTSDEF(BASS_DTS_GetLength)(void *inst, DWORD mode);
+QWORD BASSDTSDEF(BASS_DTS_GetLength)(void* inst, DWORD mode);
 
-__declspec(dllexport)
-VOID BASSDTSDEF(BASS_DTS_GetInfo)(void *inst, BASS_CHANNELINFO* info);
+VOID BASSDTSDEF(BASS_DTS_GetInfo)(void* inst, BASS_CHANNELINFO* info);
 
-__declspec(dllexport)
-BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void *inst, QWORD position, DWORD mode);
+BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void* inst, QWORD position, DWORD mode);
 
-__declspec(dllexport)
-QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void *inst, QWORD position, DWORD mode);
+QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void* inst, QWORD position, DWORD mode);
 
-__declspec(dllexport)
-VOID BASSDTSDEF(BASS_DTS_Free)(void *inst);
+VOID BASSDTSDEF(BASS_DTS_Free)(void* inst);
 
 #endif

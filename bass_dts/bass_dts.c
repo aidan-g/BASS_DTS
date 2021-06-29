@@ -43,7 +43,7 @@ BOOL BASSDTSDEF(DllMain)(HANDLE dll, DWORD reason, LPVOID reserved) {
 	return TRUE;
 }
 
-const void* BASSDTSDEF(BASSplugin)(DWORD face) {
+VOID* BASSDTSDEF(BASSplugin)(DWORD face) {
 	switch (face) {
 	case BASSPLUGIN_INFO:
 		return (void*)&plugin_info;
@@ -177,7 +177,7 @@ QWORD BASSDTSDEF(BASS_DTS_GetLength)(void *inst, DWORD mode) {
 	}
 }
 
-void BASSDTSDEF(BASS_DTS_GetInfo)(void *inst, BASS_CHANNELINFO* info) {
+VOID BASSDTSDEF(BASS_DTS_GetInfo)(void *inst, BASS_CHANNELINFO* info) {
 	DTS_STREAM* dts_stream = inst;
 	info->ctype = BASS_CTYPE_MUSIC_DTS;
 	info->freq = dts_stream->sample_rate;
@@ -217,7 +217,7 @@ QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void *inst, QWORD position, DWORD mode) {
 	return 0;
 }
 
-void BASSDTSDEF(BASS_DTS_Free)(void *inst) {
+VOID BASSDTSDEF(BASS_DTS_Free)(void *inst) {
 	DTS_STREAM* dts_stream = inst;
 	dts_stream_free(dts_stream);
 }

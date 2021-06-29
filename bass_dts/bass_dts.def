@@ -1,0 +1,14 @@
+LIBRARY bass_dts
+VERSION 2.4
+EXPORTS
+BASSplugin
+BASS_DTS_StreamCreate
+BASS_DTS_StreamCreateFile
+BASS_DTS_StreamCreateURL
+BASS_DTS_StreamProc
+BASS_DTS_StreamWrite
+BASS_DTS_GetLength
+BASS_DTS_GetInfo
+BASS_DTS_CanSetPosition
+BASS_DTS_SetPosition
+BASS_DTS_Free
