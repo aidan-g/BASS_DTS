@@ -4,6 +4,9 @@
 #include "pcm.h"
 #include "buffer.h"
 
+//2.4.0.0
+#define BASSDTSVERSION 0x02040000
+
 #define BASS_CTYPE_MUSIC_DTS 0x1f200
 
 extern const ADDON_FUNCTIONS addon_functions;
@@ -30,7 +33,7 @@ static const BASS_PLUGINFORM plugin_form[] = {
 	{ BASS_CTYPE_MUSIC_DTS, "DTS file", "*.dts" }
 };
 
-static const BASS_PLUGININFO plugin_info = { BASSVERSION, 1, plugin_form };
+static const BASS_PLUGININFO plugin_info = { BASSDTSVERSION, 1, plugin_form };
 
 BOOL BASSDTSDEF(DllMain)(HANDLE dll, DWORD reason, LPVOID reserved) {
 	switch (reason) {
