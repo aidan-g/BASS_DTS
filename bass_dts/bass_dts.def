@@ -4,7 +4,6 @@ EXPORTS
 BASSplugin
 BASS_DTS_StreamCreate
 BASS_DTS_StreamCreateFile
-BASS_DTS_StreamCreateURL
 BASS_DTS_StreamProc
 BASS_DTS_StreamWrite
 BASS_DTS_GetLength

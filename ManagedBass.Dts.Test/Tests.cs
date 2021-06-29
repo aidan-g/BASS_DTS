@@ -29,67 +29,82 @@ namespace ManagedBass.Dts.Test
         /// <summary>
         /// A basic end to end test.
         /// </summary>
-        [Test]
-        public void Test001()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void Test001(bool plugin)
         {
             if (!Bass.Init(Bass.DefaultDevice))
             {
                 Assert.Fail(string.Format("Failed to initialize BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
             }
-
-            //Plugin is not yet working.
-            //if (Bass.PluginLoad(Path.Combine(CurrentDirectory, "bass_dts.dll")) == 0)
-            //{
-            //    Assert.Fail("Failed to load DTS.");
-            //}
-
-            var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
-            if (sourceChannel == 0)
+            try
             {
-                Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
-            }
-
-            var channelInfo = default(ChannelInfo);
-            if (!Bass.ChannelGetInfo(sourceChannel, out channelInfo))
-            {
-                Assert.Fail(string.Format("Failed to get stream info: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
-            }
-
-            if (!Bass.ChannelPlay(sourceChannel))
-            {
-                Assert.Fail(string.Format("Failed to play the playback stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
-            }
-
-            var channelLength = Bass.ChannelGetLength(sourceChannel);
-            var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
-
-            do
-            {
-                if (Bass.ChannelIsActive(sourceChannel) == PlaybackState.Stopped)
+                if (!BassDts.Load())
                 {
-                    break;
+                    Assert.Fail("Failed to load DTS.");
                 }
 
-                var channelPosition = Bass.ChannelGetPosition(sourceChannel);
-                var channelPositionSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelPosition);
+                var sourceChannel = default(int);
+                if (plugin)
+                {
+                    sourceChannel = Bass.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
+                }
+                else
+                {
+                    sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
+                }
+                if (sourceChannel == 0)
+                {
+                    Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
 
-                Debug.WriteLine(
-                    "{0}/{1}",
-                    TimeSpan.FromSeconds(channelPositionSeconds).ToString("g"),
-                    TimeSpan.FromSeconds(channelLengthSeconds).ToString("g")
-                );
+                var channelInfo = default(ChannelInfo);
+                if (!Bass.ChannelGetInfo(sourceChannel, out channelInfo))
+                {
+                    Assert.Fail(string.Format("Failed to get stream info: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
 
-                Thread.Sleep(1000);
-            } while (true);
+                Assert.AreEqual(BassDts.ChannelType, channelInfo.ChannelType);
 
-            if (!Bass.StreamFree(sourceChannel))
-            {
-                Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                if (!Bass.ChannelPlay(sourceChannel))
+                {
+                    Assert.Fail(string.Format("Failed to play the playback stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
+
+                var channelLength = Bass.ChannelGetLength(sourceChannel);
+                var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
+
+                do
+                {
+                    if (Bass.ChannelIsActive(sourceChannel) == PlaybackState.Stopped)
+                    {
+                        break;
+                    }
+
+                    var channelPosition = Bass.ChannelGetPosition(sourceChannel);
+                    var channelPositionSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelPosition);
+
+                    Debug.WriteLine(
+                        "{0}/{1}",
+                        TimeSpan.FromSeconds(channelPositionSeconds).ToString("g"),
+                        TimeSpan.FromSeconds(channelLengthSeconds).ToString("g")
+                    );
+
+                    Thread.Sleep(1000);
+                } while (true);
+
+                if (!Bass.StreamFree(sourceChannel))
+                {
+                    Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
             }
-
-            if (!Bass.Free())
+            finally
             {
-                Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                BassDts.Unload();
+                if (!Bass.Free())
+                {
+                    Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
             }
         }
 
@@ -104,43 +119,56 @@ namespace ManagedBass.Dts.Test
                 Assert.Fail(string.Format("Failed to initialize BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
             }
 
-            //Plugin is not yet working.
-            //if (Bass.PluginLoad(Path.Combine(CurrentDirectory, "bass_dts.dll")) == 0)
-            //{
-            //    Assert.Fail("Failed to load DTS.");
-            //}
-
-            var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
-            if (sourceChannel == 0)
+            try
             {
-                Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                if (!BassDts.Load())
+                {
+                    Assert.Fail("Failed to load DTS.");
+                }
+
+                var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
+                if (sourceChannel == 0)
+                {
+                    Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
+
+                var channelInfo = default(ChannelInfo);
+                if (!Bass.ChannelGetInfo(sourceChannel, out channelInfo))
+                {
+                    Assert.Fail(string.Format("Failed to get stream info: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
+
+                Assert.AreEqual(BassDts.ChannelType, channelInfo.ChannelType);
+
+                if (!Bass.ChannelPlay(sourceChannel))
+                {
+                    Assert.Fail(string.Format("Failed to play the playback stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
+
+                var channelLength = Bass.ChannelGetLength(sourceChannel);
+                var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
+
+                Bass.ChannelSetPosition(sourceChannel, Bass.ChannelSeconds2Bytes(sourceChannel, channelLengthSeconds - 10), PositionFlags.Bytes);
+
+                Thread.Sleep(2000);
+
+                var channelPosition = Bass.ChannelGetPosition(sourceChannel);
+                var channelPositionSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelPosition);
+
+                Assert.IsTrue(channelPositionSeconds >= channelLengthSeconds - 10);
+
+                if (!Bass.StreamFree(sourceChannel))
+                {
+                    Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
             }
-
-            if (!Bass.ChannelPlay(sourceChannel))
+            finally
             {
-                Assert.Fail(string.Format("Failed to play the playback stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
-            }
-
-            var channelLength = Bass.ChannelGetLength(sourceChannel);
-            var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
-
-            Bass.ChannelSetPosition(sourceChannel, Bass.ChannelSeconds2Bytes(sourceChannel, channelLengthSeconds - 10), PositionFlags.Bytes);
-
-            Thread.Sleep(2000);
-
-            var channelPosition = Bass.ChannelGetPosition(sourceChannel);
-            var channelPositionSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelPosition);
-
-            Assert.IsTrue(channelPositionSeconds >= channelLengthSeconds - 10);
-
-            if (!Bass.StreamFree(sourceChannel))
-            {
-                Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
-            }
-
-            if (!Bass.Free())
-            {
-                Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                BassDts.Unload();
+                if (!Bass.Free())
+                {
+                    Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
             }
         }
 
@@ -154,32 +182,42 @@ namespace ManagedBass.Dts.Test
             {
                 Assert.Fail(string.Format("Failed to initialize BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
             }
-
-            //Plugin is not yet working.
-            //if (Bass.PluginLoad(Path.Combine(CurrentDirectory, "bass_dts.dll")) == 0)
-            //{
-            //    Assert.Fail("Failed to load DTS.");
-            //}
-
-            var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
-            if (sourceChannel == 0)
+            try
             {
-                Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                if (!BassDts.Load())
+                {
+                    Assert.Fail("Failed to load DTS.");
+                }
+
+                var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
+                if (sourceChannel == 0)
+                {
+                    Assert.Fail(string.Format("Failed to create source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
+
+                var channelInfo = default(ChannelInfo);
+                if (!Bass.ChannelGetInfo(sourceChannel, out channelInfo))
+                {
+                    Assert.Fail(string.Format("Failed to get stream info: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
+
+                Assert.AreEqual(BassDts.ChannelType, channelInfo.ChannelType);
+
+                var channelLength = Bass.ChannelGetLength(sourceChannel);
+                var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
+
+                if (!Bass.StreamFree(sourceChannel))
+                {
+                    Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
             }
-
-            var channelLength = Bass.ChannelGetLength(sourceChannel);
-            var channelLengthSeconds = Bass.ChannelBytes2Seconds(sourceChannel, channelLength);
-            
-
-
-            if (!Bass.StreamFree(sourceChannel))
+            finally
             {
-                Assert.Fail(string.Format("Failed to free the source stream: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
-            }
-
-            if (!Bass.Free())
-            {
-                Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                BassDts.Unload();
+                if (!Bass.Free())
+                {
+                    Assert.Fail(string.Format("Failed to free BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
+                }
             }
         }
     }

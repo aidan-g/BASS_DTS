@@ -57,7 +57,7 @@ typedef struct {
 
 BOOL BASSDTSDEF(DllMain)(HANDLE dll, DWORD reason, LPVOID reserved);
 
-VOID* BASSDTSDEF(BASSplugin)(DWORD face);
+const VOID* BASSDTSDEF(BASSplugin)(DWORD face);
 
 HSTREAM BASSDTSDEF(BASS_DTS_StreamCreate)(BASSFILE file, DWORD flags);
 

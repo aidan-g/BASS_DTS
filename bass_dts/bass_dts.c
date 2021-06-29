@@ -26,7 +26,9 @@ const ADDON_FUNCTIONS addon_functions = {
 	NULL
 };
 
-static const BASS_PLUGINFORM plugin_form[] = { BASS_CTYPE_MUSIC_DTS, "DTS", "*.dts" };
+static const BASS_PLUGINFORM plugin_form[] = {
+	{ BASS_CTYPE_MUSIC_DTS, "DTS file", "*.dts" }
+};
 
 static const BASS_PLUGININFO plugin_info = { BASSVERSION, 1, plugin_form };
 
@@ -43,14 +45,12 @@ BOOL BASSDTSDEF(DllMain)(HANDLE dll, DWORD reason, LPVOID reserved) {
 	return TRUE;
 }
 
-VOID* BASSDTSDEF(BASSplugin)(DWORD face) {
+const VOID* BASSDTSDEF(BASSplugin)(DWORD face) {
 	switch (face) {
 	case BASSPLUGIN_INFO:
 		return (void*)&plugin_info;
 	case BASSPLUGIN_CREATE:
 		return (void*)&BASS_DTS_StreamCreate;
-	case BASSPLUGIN_CREATEURL:
-		return (void*)&BASS_DTS_StreamCreateURL;
 	}
 	return NULL;
 }
@@ -103,16 +103,9 @@ HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateFile)(BOOL mem, const void* file, QWORD 
 	if (!handle) {
 		bassfunc->file.Close(bass_file);
 		return 0;
-
 	}
 	bassfunc->file.SetStream(bass_file, handle);
 	return handle;
-}
-
-HSTREAM BASSDTSDEF(BASS_DTS_StreamCreateURL)(const char *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user) {
-	//Sorry we only support file backed streams.
-	errorn(BASS_ERROR_NOTAVAIL);
-	return 0;
 }
 
 DWORD BASSDTSDEF(BASS_DTS_StreamProc)(HSTREAM handle, void* buffer, DWORD length, void* user) {
@@ -136,7 +129,7 @@ DWORD BASSDTSDEF(BASS_DTS_StreamProc)(HSTREAM handle, void* buffer, DWORD length
 	return length - remaining;
 }
 
-BOOL BASSDTSDEF(BASS_DTS_StreamWrite)(HSTREAM handle, void* buffer, DWORD* position, DWORD* remaining, void *user) {
+BOOL BASSDTSDEF(BASS_DTS_StreamWrite)(HSTREAM handle, void* buffer, DWORD* position, DWORD* remaining, void* user) {
 	DTS_STREAM* dts_stream = user;
 	//length = the amount of data from the current decodeded samples available.
 	DWORD length =
@@ -159,7 +152,7 @@ BOOL BASSDTSDEF(BASS_DTS_StreamWrite)(HSTREAM handle, void* buffer, DWORD* posit
 	return TRUE;
 }
 
-QWORD BASSDTSDEF(BASS_DTS_GetLength)(void *inst, DWORD mode) {
+QWORD BASSDTSDEF(BASS_DTS_GetLength)(void* inst, DWORD mode) {
 	DTS_STREAM* dts_stream = inst;
 	QWORD position;
 	if (mode == BASS_POS_BYTE) {
@@ -177,7 +170,7 @@ QWORD BASSDTSDEF(BASS_DTS_GetLength)(void *inst, DWORD mode) {
 	}
 }
 
-VOID BASSDTSDEF(BASS_DTS_GetInfo)(void *inst, BASS_CHANNELINFO* info) {
+VOID BASSDTSDEF(BASS_DTS_GetInfo)(void* inst, BASS_CHANNELINFO* info) {
 	DTS_STREAM* dts_stream = inst;
 	info->ctype = BASS_CTYPE_MUSIC_DTS;
 	info->freq = dts_stream->sample_rate;
@@ -185,7 +178,7 @@ VOID BASSDTSDEF(BASS_DTS_GetInfo)(void *inst, BASS_CHANNELINFO* info) {
 	info->origres = dts_stream->input_format.bits_per_sample;
 }
 
-BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void *inst, QWORD position, DWORD mode) {
+BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void* inst, QWORD position, DWORD mode) {
 	if (mode == BASS_POS_BYTE) {
 		//Because we're always file backed the position should always be valid.
 		return TRUE;
@@ -196,7 +189,7 @@ BOOL BASSDTSDEF(BASS_DTS_CanSetPosition)(void *inst, QWORD position, DWORD mode)
 	}
 }
 
-QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void *inst, QWORD position, DWORD mode) {
+QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void* inst, QWORD position, DWORD mode) {
 	DTS_STREAM* dts_stream = inst;
 	if (mode == BASS_POS_BYTE) {
 		//Not sure why we divide by the number of channels but nothing else.
@@ -217,7 +210,7 @@ QWORD BASSDTSDEF(BASS_DTS_SetPosition)(void *inst, QWORD position, DWORD mode) {
 	return 0;
 }
 
-VOID BASSDTSDEF(BASS_DTS_Free)(void *inst) {
+VOID BASSDTSDEF(BASS_DTS_Free)(void* inst) {
 	DTS_STREAM* dts_stream = inst;
 	dts_stream_free(dts_stream);
 }
