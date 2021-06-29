@@ -6,6 +6,7 @@
     <OutputPath>..\distribution\</OutputPath>
     <Version>0.1.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,12 +31,20 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\lib\bass_dts.dll" Link="bass_dts.dll" PackagePath="build">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup Condition="'$(Platform)' == 'x86'">
+		<None Include="..\lib\x86\bass_dts.dll" Link="bass_dts.dll" PackagePath="build\x86">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x64'">
+		<None Include="..\lib\x64\bass_dts.dll" Link="bass_dts.dll" PackagePath="build\x64">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

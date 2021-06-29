@@ -4,6 +4,7 @@
     <TargetFrameworks>net40;net461</TargetFrameworks>
     <AssemblyName>ManagedBass.Dts.Test</AssemblyName>
     <OutputPath>..\distribution\</OutputPath>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,11 +30,17 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <None Include="..\lib\bass.dll" Link="bass.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x86'">
+		<None Include="..\lib\x86\bass.dll" Link="bass.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x64'">
+		<None Include="..\lib\x64\bass.dll" Link="bass.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
