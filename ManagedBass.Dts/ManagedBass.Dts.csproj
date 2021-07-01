@@ -1,51 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net40;net461</TargetFrameworks>
-    <AssemblyName>ManagedBass.Dts</AssemblyName>
-    <OutputPath>..\distribution\</OutputPath>
-    <Version>0.1.0</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Platforms>x64;x86</Platforms>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net40;net461</TargetFrameworks>
+		<AssemblyName>ManagedBass.Dts</AssemblyName>
+		<OutputPath>..\distribution\</OutputPath>
+		<Version>0.2.0</Version>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Platforms>x64;x86</Platforms>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="ManagedBass" Condition="'$(TargetFramework)' == 'net40'">
-      <HintPath>..\lib\net40\ManagedBass.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="ManagedBass" Condition="'$(TargetFramework)' == 'net40'">
+			<HintPath>..\lib\net40\ManagedBass.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="ManagedBass" Condition="'$(TargetFramework)' == 'net461'">
-      <HintPath>..\lib\ManagedBass.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="ManagedBass" Condition="'$(TargetFramework)' == 'net461'">
+			<HintPath>..\lib\ManagedBass.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="ManagedBass.Dts.targets" PackagePath="build">
-      <pack>true</pack>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="ManagedBass.Dts.targets" PackagePath="build">
+			<pack>true</pack>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup Condition="'$(Platform)' == 'x86'">
-		<None Include="..\lib\x86\bass_dts.dll" Link="bass_dts.dll" PackagePath="build\x86">
-			<Pack>true</Pack>
-			<PackageCopyToOutput>true</PackageCopyToOutput>
+		<None Include="..\lib\x86\bass_dts.dll" Link="bass_dts.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Platform)' == 'x64'">
-		<None Include="..\lib\x64\bass_dts.dll" Link="bass_dts.dll" PackagePath="build\x64">
-			<Pack>true</Pack>
-			<PackageCopyToOutput>true</PackageCopyToOutput>
+		<None Include="..\lib\x64\bass_dts.dll" Link="bass_dts.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-	
+
+	<ItemGroup>
+		<None Include="..\lib\x86\bass_dts.dll" Link="x86\bass_dts.dll" PackagePath="build\x86">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\lib\x64\bass_dts.dll" Link="x64\bass_dts.dll" PackagePath="build\x64">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+		</None>
+	</ItemGroup>
+
 </Project>
