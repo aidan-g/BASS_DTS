@@ -15,12 +15,14 @@ public void Main()
         Assert.Fail(string.Format("Failed to initialize BASS: {0}", Enum.GetName(typeof(Errors), Bass.LastError)));
     }
 
-    //Plugin is not yet working.
-    //if (Bass.PluginLoad(Path.Combine(CurrentDirectory, "bass_dts.dll")) == 0)
-    //{
-    //    Assert.Fail("Failed to load DTS.");
-    //}
+    //Load as a plugin if you like.
+    if (!BassDts.Load())
+    {
+        Assert.Fail("Failed to load DTS.");
+    }
 
+    //Use one of these.
+    var sourceChannel = Bass.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
     var sourceChannel = BassDts.CreateStream(Path.Combine(CurrentDirectory, this.FileName), 0, 0, this.BassFlags);
     if (sourceChannel == 0)
     {
@@ -72,6 +74,9 @@ public void Main()
 }
 ```
 
-Unfortunately I can't get the "plugin" aspect working correctly.
-There is a way to associate .dts files with the plugin so that BASS_StreamCreateFile works.
-You must use BASS_DTS_StreamCreateFile for now.
+As of 0.2.0 (4e9f449dc0dd2b9aafecb651c0af750f6653aba0) this library is working as a BASS plugin.
+This means you only need to include `bass_dts.dll` with your application (with your other codecs, likely in the `addon` folder).
+One caviat is that BASS will prefer a built in codec if it finds a header, I have observed .dts files with WAVE/RIFF headers that cause BASS to play the file as wav. 
+As plugin codec association is only by file extension, I don't think there's a way to prevent this behaviour.
+
+If this is an issue to you then continue to use `BASS_DTS_StreamCreateFile/BassDts.CreateStream`.

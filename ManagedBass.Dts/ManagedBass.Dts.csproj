@@ -5,9 +5,16 @@
 		<AssemblyName>ManagedBass.Dts</AssemblyName>
 		<OutputPath>..\distribution\</OutputPath>
 		<Version>0.2.0</Version>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Platforms>x64;x86</Platforms>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<IncludeSymbols>true</IncludeSymbols>
+		<RepositoryUrl>https://github.com/aidan-g/BASS_DTS.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<ItemGroup>
